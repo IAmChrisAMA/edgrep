@@ -4,30 +4,30 @@
 int main(int argc, char *argv[]) {
 	char *p1, *p2;
 	argv++;
-	// while (argc > 1 && **argv=='-') {
-	// 	switch((*argv)[1]) {
-	//
-	// 	case '\0':
-	// 		vflag = 0;
-	// 		break;
-	//
-	// 	case 'q':
-	// 		vflag = 1;
-	// 		break;
-	//
-	// 	case 'o':
-	// 		oflag = 1;
-	// 		break;
-	// 	}
-	// 	argv++;
-	// 	argc--;
-	// }
-	// if (oflag) {
-	// 	p1 = "/dev/stdout";
-	// 	p2 = savedfile;
-	// 	while (*p2++ = *p1++)
-	// 		;
-	// }
+	while (argc > 1 && **argv=='-') {
+		switch((*argv)[1]) {
+
+		case '\0':
+			vflag = 0;
+			break;
+
+		case 'q':
+			vflag = 1;
+			break;
+
+		case 'o':
+			oflag = 1;
+			break;
+		}
+		argv++;
+		argc--;
+	}
+	if (oflag) {
+		p1 = "/dev/stdout";
+		p2 = savedfile;
+		while (*p2++ = *p1++)
+			;
+	}
 	if (argc>1) {
 		p1 = *argv;
 		p2 = savedfile;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 		globp = "r";
 	}
 	zero = (unsigned *)malloc(nlall*sizeof(unsigned));
-	//tfname = mktemp(tmpXXXXX);
+	tfname = mktemp(tmpXXXXX);
 	init();
 	setjmp(savej);
 	commands();
@@ -87,6 +87,12 @@ void commands(void) {
 		addr1 = addr2;
 	switch(c) {
 
+	// case 'f':         // Sets default filename to file.
+	// 	setnoaddr();
+	// 	filename(c);
+	// 	puts(savedfile);
+	// 	continue;
+
 	case 'g':         // Search file
 		global(1);
 		continue;
@@ -125,6 +131,19 @@ void commands(void) {
 		exfile();
 		fchange = c;
 		continue;
+
+	// case 'u':         // Undoes last command
+	// 	nonzero();
+	// 	newline();
+	// 	if ((*addr2&~01) != subnewa)
+	// 		error(Q);
+	// 	*addr2 = subolda;
+	// 	dot = addr2;
+	// 	continue;
+
+	// case 'v':         // Sets command-list tag
+	// 	global(0);
+	// 	continue;
 
 	case EOF:         // EOF (Quits)
 		return;
@@ -171,6 +190,23 @@ unsigned int *address(void) {
 				a = zero;
 			a += sign*getnum();
 		} else switch (c) {
+		// case '$':
+		// 	a = dol;
+		// 	/* fall through */
+		// case '.':
+		// 	if (opcnt)
+		// 		error(Q);
+		// 	break;
+		// case '\'':
+		// 	c = getchr();
+		// 	if (opcnt || c<'a' || 'z'<c)
+		// 		error(Q);
+		// 	a = zero;
+		// 	do a++; while (a<=dol && names[c-'a']!=(*a&~01));
+		// 	break;
+		// case '?':
+		// 	sign = -sign;
+		// 	/* fall through */
 		case '/':
 			compile(c);
 			b = a;
@@ -306,6 +342,8 @@ void exfile(void) {
 }
 
 void onhup(int n) {
+	// signal(SIGINT, SIG_IGN);
+	// signal(SIGHUP, SIG_IGN);
 	if (dol > zero) {
 		addr1 = zero+1;
 		addr2 = dol;
@@ -323,6 +361,7 @@ void error(char *s) {
 	wrapp = 0;
 	listf = 0;
 	listn = 0;
+	//putchr("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry 'grep --help' for more information."); // Replaced '?' with grep's default.
 	putchr('?');
 	puts(s);
 	count = 0;

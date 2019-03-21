@@ -4,30 +4,30 @@
 int main(int argc, char *argv[]) {
 	char *p1, *p2;
 	argv++;
-	// while (argc > 1 && **argv=='-') {
-	// 	switch((*argv)[1]) {
-	//
-	// 	case '\0':
-	// 		vflag = 0;
-	// 		break;
-	//
-	// 	case 'q':
-	// 		vflag = 1;
-	// 		break;
-	//
-	// 	case 'o':
-	// 		oflag = 1;
-	// 		break;
-	// 	}
-	// 	argv++;
-	// 	argc--;
-	// }
-	// if (oflag) {
-	// 	p1 = "/dev/stdout";
-	// 	p2 = savedfile;
-	// 	while (*p2++ = *p1++)
-	// 		;
-	// }
+	while (argc > 1 && **argv=='-') {
+		switch((*argv)[1]) {
+
+		case '\0':
+			vflag = 0;
+			break;
+
+		case 'q':
+			vflag = 1;
+			break;
+
+		case 'o':
+			oflag = 1;
+			break;
+		}
+		argv++;
+		argc--;
+	}
+	if (oflag) {
+		p1 = "/dev/stdout";
+		p2 = savedfile;
+		while (*p2++ = *p1++)
+			;
+	}
 	if (argc>1) {
 		p1 = *argv;
 		p2 = savedfile;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 		globp = "r";
 	}
 	zero = (unsigned *)malloc(nlall*sizeof(unsigned));
-	//tfname = mktemp(tmpXXXXX);
+	tfname = mktemp(tmpXXXXX);
 	init();
 	setjmp(savej);
 	commands();
@@ -117,8 +117,8 @@ void commands(void) {
 			lastc = '\n';
 			error(file);
 		}
-		setwide();
-		squeeze(0);
+		//setwide();
+		//squeeze(0);
 		ninbuf = 0;
 		c = zero != dol;
 		append(getfile, addr2);
@@ -137,7 +137,7 @@ void commands(void) {
 void print(void) {
 	unsigned int *a1;
 
-	nonzero();
+	//nonzero();
 	a1 = addr1;
 	do {
 		if (listn) {
@@ -222,26 +222,26 @@ int getnum(void) {
 	return (r);
 }
 
-void setwide(void) {
-	if (!given) {
-		addr1 = zero + (dol>zero);
-		addr2 = dol;
-	}
-}
+// void setwide(void) {
+// 	if (!given) {
+// 		addr1 = zero + (dol>zero);
+// 		addr2 = dol;
+// 	}
+// }
 
-void setnoaddr(void) {
-	if (given)
-		error(Q);
-}
+// void setnoaddr(void) {
+// 	if (given)
+// 		error(Q);
+// }
 
-void nonzero(void) {
-	squeeze(1);
-}
+// void nonzero(void) {
+// 	squeeze(1);
+// }
 
-void squeeze(int i) {
-	if (addr1<zero+i || addr2>dol || addr1>addr2)
-		error(Q);
-}
+// void squeeze(int i) {
+// 	if (addr1<zero+i || addr2>dol || addr1>addr2)
+// 		error(Q);
+// }
 
 void newline(void) {
 	int c;
@@ -306,6 +306,8 @@ void exfile(void) {
 }
 
 void onhup(int n) {
+	// signal(SIGINT, SIG_IGN);
+	// signal(SIGHUP, SIG_IGN);
 	if (dol > zero) {
 		addr1 = zero+1;
 		addr2 = dol;
@@ -323,6 +325,7 @@ void error(char *s) {
 	wrapp = 0;
 	listf = 0;
 	listn = 0;
+	//putchr("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry 'grep --help' for more information."); // Replaced '?' with grep's default.
 	putchr('?');
 	puts(s);
 	count = 0;
@@ -597,8 +600,8 @@ void global(int k) {
 
 	if (globp)
 		error(Q);
-	setwide();
-	squeeze(dol>zero);
+	//setwide();
+	//squeeze(dol>zero);
 	if ((c=getchr())=='\n')
 		error(Q);
 	compile(c);

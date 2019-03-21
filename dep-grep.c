@@ -1,3 +1,7 @@
+//                    THE FIRST CRUSADE
+//=============================================================//
+
+
 // case 'a':         // Appends text to buffer
 // 	add(0);
 // 	continue;
@@ -255,4 +259,229 @@
 // 	if (vflag) {
 // 		puts("!");
 // 	}
+// }
+
+//                    THE SECOND CRUSADE
+//=============================================================//
+
+
+// int getsub(void) {
+// 	char *p1, *p2;
+//
+// 	p1 = linebuf;
+// 	if ((p2 = linebp) == 0)
+// 		return(EOF);
+// 	while (*p1++ = *p2++)
+// 		;
+// 	linebp = 0;
+// 	return(0);
+// }
+
+// void dosub(void) {
+// 	char *lp, *sp, *rp;
+// 	int c;
+//
+// 	lp = linebuf;
+// 	sp = genbuf;
+// 	rp = rhsbuf;
+// 	while (lp < loc1)
+// 		*sp++ = *lp++;
+// 	while (c = *rp++&0377) {
+// 		if (c=='&') {
+// 			sp = place(sp, loc1, loc2);
+// 			continue;
+// 		} else if (c&0200 && (c &= 0177) >='1' && c < nbra+'1') {
+// 			sp = place(sp, braslist[c-'1'], braelist[c-'1']);
+// 			continue;
+// 		}
+// 		*sp++ = c&0177;
+// 		if (sp >= &genbuf[LBSIZE])
+// 			error(Q);
+// 	}
+// 	lp = loc2;
+// 	loc2 = sp - genbuf + linebuf;
+// 	while (*sp++ = *lp++)
+// 		if (sp >= &genbuf[LBSIZE])
+// 			error(Q);
+// 	lp = linebuf;
+// 	sp = genbuf;
+// 	while (*lp++ = *sp++)
+// 		;
+// }
+
+// char *
+// place(char *sp, char *l1, char *l2) {
+// 	while (l1 < l2) {
+// 		*sp++ = *l1++;
+// 		if (sp >= &genbuf[LBSIZE])
+// 			error(Q);
+// 	}
+// 	return(sp);
+// }
+
+// void move(int cflag) {
+// 	unsigned int *adt, *ad1, *ad2;
+//
+// 	nonzero();
+// 	if ((adt = address())==0)	/* address() guarantees addr is in range */
+// 		error(Q);
+// 	newline();
+// 	if (cflag) {
+// 		unsigned int *ozero;
+// 		int delta;
+//
+// 		ad1 = dol;
+// 		ozero = zero;
+// 		append(getcopy, ad1++);
+// 		ad2 = dol;
+// 		delta = zero - ozero;
+// 		ad1 += delta;
+// 		adt += delta;
+// 	} else {
+// 		ad2 = addr2;
+// 		for (ad1 = addr1; ad1 <= ad2;)
+// 			*ad1++ &= ~01;
+// 		ad1 = addr1;
+// 	}
+// 	ad2++;
+// 	if (adt<ad1) {
+// 		dot = adt + (ad2-ad1);
+// 		if ((++adt)==ad1)
+// 			return;
+// 		reverse(adt, ad1);
+// 		reverse(ad1, ad2);
+// 		reverse(adt, ad2);
+// 	} else if (adt >= ad2) {
+// 		dot = adt++;
+// 		reverse(ad1, ad2);
+// 		reverse(ad2, adt);
+// 		reverse(ad1, adt);
+// 	} else
+// 		error(Q);
+// 	fchange = 1;
+// }
+
+// void reverse(unsigned int *a1, unsigned int *a2) {
+// 	int t;
+//
+// 	for (;;) {
+// 		t = *--a2;
+// 		if (a2 <= a1)
+// 			return;
+// 		*a2 = *a1;
+// 		*a1++ = t;
+// 	}
+// }
+
+// int getcopy(void) {
+// 	if (addr1 > addr2)
+// 		return(EOF);
+// 	getline(*addr1++);
+// 	return(0);
+// }
+
+// case 'Q':         // Quits ed UNCONDITIONALLY
+// 	fchange = 0;
+// case 'q':         // Quits ed
+// 	setnoaddr();
+// 	newline();
+// 	quit(0);
+
+// case 'n':         // Prints the addressed lines along with their number
+// 	listn++;
+// 	newline();
+// 	print();
+// 	continue;
+
+// void onintr(int n) {
+// 	signal(SIGINT, onintr);
+// 	putchr('\n');
+// 	lastc = '\n';
+// 	error(Q);
+// }
+
+void onhup(int n) {
+	// signal(SIGINT, SIG_IGN);
+	// signal(SIGHUP, SIG_IGN);
+	if (dol > zero) {
+		addr1 = zero+1;
+		addr2 = dol;
+		io = creat("ed.hup", 0600);
+		if (io > 0)
+			putfile();
+	}
+	fchange = 0;
+	quit(0);
+}
+
+// int gettty(void) {
+// 	int rc;
+//
+// 	if (rc = gety())
+// 		return(rc);
+// 	if (linebuf[0]=='.' && linebuf[1]==0)
+// 		return(EOF);
+// 	return(0);
+// }
+
+// int gety(void) {
+// 	int c;
+// 	char *gf;
+// 	char *p;
+//
+// 	p = linebuf;
+// 	gf = globp;
+// 	while ((c = getchr()) != '\n') {
+// 		if (c==EOF) {
+// 			if (gf)
+// 				peekc = c;
+// 			return(c);
+// 		}
+// 		if ((c &= 0177) == 0)
+// 			continue;
+// 		*p++ = c;
+// 		if (p >= &linebuf[LBSIZE-2])
+// 			error(Q);
+// 	}
+//
+// 	*p++ = 0;
+// 	return(0);
+// }
+
+// void setwide(void) {
+// 	if (!given) {
+// 		addr1 = zero + (dol>zero);
+// 		addr2 = dol;
+// 	}
+// }
+
+// void setnoaddr(void) {
+// 	if (given)
+// 		error(Q);
+// }
+
+// void nonzero(void) {
+// 	squeeze(1);
+// }
+
+// void squeeze(int i) {
+// 	if (addr1<zero+i || addr2>dol || addr1>addr2)
+// 		error(Q);
+// }
+
+// void newline(void) {
+// 	int c;
+//
+// 	if ((c = getchr()) == '\n' || c == EOF)
+// 		return;
+// 	if (c=='p' || c=='l' || c=='n') {
+// 		pflag++;
+// 		if (c=='l')
+// 			listf++;
+// 		else if (c=='n')
+// 			listn++;
+// 		if ((c=getchr())=='\n')
+// 			return;
+// 	}
+// 	error(Q);
 // }

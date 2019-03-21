@@ -175,6 +175,12 @@ setwide()
 squeeze()
 append()
 exfile()
+substitute()
+getchr() ...duh
+putfile()
+lseek() ??
+putd()
+callunix()      yeah that may be going bye bye, though good on ed
 
 
 
