@@ -17,7 +17,6 @@ int  vflag  = 1, oflag, listf, listn, col, tfile  = -1, tline, iblock  = -1, obl
 int  names[26], anymarks, nbra, subnewa, subolda, fchange, wrapp, bpagesize = 20;
 unsigned nlall = 128;  unsigned int  *addr1, *addr2, *dot, *dol, *zero;
 
-char inputbuf[GBSIZE];
 long  count;
 char  Q[] = "", T[] = "TMP", savedfile[FNSIZE], file[FNSIZE], linebuf[LBSIZE], rhsbuf[LBSIZE/2], expbuf[ESIZE+4];
 char  genbuf[LBSIZE], *nextip, *linebp, *globp, *mktemp(char *), tmpXXXXX[50] = "/tmp/eXXXXX";

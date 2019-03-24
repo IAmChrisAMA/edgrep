@@ -7,50 +7,27 @@
 #include <string.h>
 #include "edgrep.h"
 
-
-
-int main(int argc, char *argv[]) {  char *p1, *p2;  SIG_TYP oldintr;  oldquit = signal(SIGQUIT, SIG_IGN);
+int main(int argc, char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
-  commands();
+  while (argc == 3) {
+    FILE *file = fopen(argv[2], "r");
+    int f; char c;
+
+    while ((f = fgetc(file)) != EOF) {
+        c = *argv[1];
+        printf("%s", c);
+        //printf("%c", c);
+    }
+
+    fclose(file);
+    return 0;
+  }
+
+  if (argc == 2) { for(;;); } // It's kinda what grep does.
+  else { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n"); }
   quit(0);  return 0;
 }
-void commands(void) {  unsigned int *a1;  int c, temp;  char lastsep;
-  for (;;) {
-    if (pflag) { pflag = 0;  addr1 = addr2 = dot;  print(); }  c = '\n';
-    for (addr1 = 0;;) {
-      lastsep = c;  a1 = address();  c = getchr();
-      if (c != ',' && c != ';') { break; }  if (lastsep==',') { error(Q); }
-      if (a1==0) {  a1 = zero+1;  if (a1 > dol) { a1--; }  }  addr1 = a1;  if (c == ';') { dot = a1; }
-    }
-    if (lastsep != '\n' && a1 == 0) { a1 = dol; }
-    if ((addr2 = a1)==0) { given = 0;  addr2 = dot;  } else { given = 1; }
-    if (addr1==0) { addr1 = addr2; }
-
-    // if (argv[1] == "<") {
-    //
-    //
-    // }
-
-    switch(c) {
-    case EOF:  return;
-    //======================================================================== //
-    case '\n':  if (a1 == 0) { a1 = dot + 1;  addr2 = a1;  addr1 = a1; }
-                if (lastsep == ';') { addr1 = a1; }  print();  continue;
-    case 'e':  setnoaddr(); if (vflag && fchange) { fchange = 0;  error(Q); } filename(c);  init();
-               addr2 = zero;  goto caseread;
-    case 'g':  global(1);  continue;
-    case 'p':  case 'P':  newline();  print();  continue;
-    case 'Q':  fchange = 0;  case 'q':  setnoaddr();  newline();  quit(0);
-    caseread:
-        if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }  setwide();  squeeze(0);
-                 ninbuf = 0;  c = zero != dol;
-        append(getfile, addr2);  exfile();  fchange = c; continue;
-    case 'z':  grepline();  continue;
-    default:  // fallthrough
-    caseGrepError:  greperror(c);  continue;
-    }  error(Q);
-  }
-}
+void commands(void) {}
 unsigned int* address(void) {  int sign;  unsigned int *a, *b;  int opcnt, nextopand;  int c;
   nextopand = -1;  sign = 1;  opcnt = 0;  a = dot;
   do {
@@ -190,7 +167,7 @@ void filename(int comm) {  char *p1, *p2;  int c;  count = 0;  c = getchr();
   *p1++ = 0;
   if (savedfile[0] == 0||comm == 'e'||comm == 'f') { p1 = savedfile;  p2 = file;  while ((*p1++ = *p2++) == 1) { } }
 }
-char * getblock(unsigned int atl, int iof) {  int off, bno = (atl/(BLKSIZE/2));  off = (atl<<1) & (BLKSIZE-1) & ~03;
+char* getblock(unsigned int atl, int iof) {  int off, bno = (atl/(BLKSIZE/2));  off = (atl<<1) & (BLKSIZE-1) & ~03;
   if (bno >= NBLK) {  lastc = '\n';  error(T);  }  nleft = BLKSIZE - off;
   if (bno==iblock) {  ichanged |= iof;  return(ibuff+off);  }  if (bno==oblock)  { return(obuff+off);  }
   if (iof==READ) {
@@ -200,8 +177,6 @@ char * getblock(unsigned int atl, int iof) {  int off, bno = (atl/(BLKSIZE/2)); 
   if (oblock>=0) { blkio(oblock, obuff, (long (*)(int, void*, unsigned long))write); }
   oblock = bno;  return(obuff+off);
 }
-char inputbuf[GBSIZE];
-
 int getchr(void) {  char c;
   if ((lastc=peekc)) {  peekc = 0;  return(lastc); }
   if (globp) {  if ((lastc = *globp++) != 0) { return(lastc); }  globp = 0;  return(EOF);  }
