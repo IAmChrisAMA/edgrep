@@ -2,8 +2,8 @@
 #include "grep.h"
 
 int main(int argc, char *argv[]) {
-	char *p1, *p2;
-	argv++;
+	// char *p1, *p2;
+	// argv++;
 	// while (argc > 1 && **argv=='-') {
 	// 	switch((*argv)[1]) {
 	//
@@ -28,20 +28,20 @@ int main(int argc, char *argv[]) {
 	// 	while (*p2++ = *p1++)
 	// 		;
 	// }
-	if (argc>1) {
-		p1 = *argv;
-		p2 = savedfile;
-		while (*p2++ = *p1++)
-			if (p2 >= &savedfile[sizeof(savedfile)])
-				p2--;
-		globp = "r";
-	}
+	// if (argc>1) {
+	// 	p1 = *argv;
+	// 	p2 = savedfile;
+	// 	while (*p2++ = *p1++)
+	// 		if (p2 >= &savedfile[sizeof(savedfile)])
+	// 			p2--;
+	// 	globp = "r";
+	// }
 	zero = (unsigned *)malloc(nlall*sizeof(unsigned));
 	//tfname = mktemp(tmpXXXXX);
-	init();
-	setjmp(savej);
+	//init();
+	//setjmp(savej);
 	commands();
-	quit(0);
+	//quit(0);
 	return 0;
 }
 
@@ -314,7 +314,7 @@ void onhup(int n) {
 			putfile();
 	}
 	fchange = 0;
-	quit(0);
+	//quit(0);
 }
 
 void error(char *s) {
@@ -461,14 +461,14 @@ int append(int (*f)(void), unsigned int *a) {
 	return(nline);
 }
 
-void quit(int n) {
-	if (vflag && fchange && dol!=zero) {
-		fchange = 0;
-		error(Q);
-	}
-	unlink(tfname);
-	exit(0);
-}
+// void quit(int n) {
+// 	if (vflag && fchange && dol!=zero) {
+// 		fchange = 0;
+// 		error(Q);
+// 	}
+// 	unlink(tfname);
+// 	exit(0);
+// }
 
 void gdelete(void) {
 	unsigned int *a1, *a2, *a3;

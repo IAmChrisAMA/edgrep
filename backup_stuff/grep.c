@@ -1,43 +1,10 @@
+#include <signal.h>
 #include <setjmp.h>
 #include "grep.h"
 
 int main(int argc, char *argv[]) {
-	char *p1, *p2;
-	argv++;
-	while (argc > 1 && **argv=='-') {
-		switch((*argv)[1]) {
-
-		case '\0':
-			vflag = 0;
-			break;
-
-		case 'q':
-			vflag = 1;
-			break;
-
-		case 'o':
-			oflag = 1;
-			break;
-		}
-		argv++;
-		argc--;
-	}
-	if (oflag) {
-		p1 = "/dev/stdout";
-		p2 = savedfile;
-		while (*p2++ = *p1++)
-			;
-	}
-	if (argc>1) {
-		p1 = *argv;
-		p2 = savedfile;
-		while (*p2++ = *p1++)
-			if (p2 >= &savedfile[sizeof(savedfile)])
-				p2--;
-		globp = "r";
-	}
 	zero = (unsigned *)malloc(nlall*sizeof(unsigned));
-	tfname = mktemp(tmpXXXXX);
+	//tfname = mktemp(tmpXXXXX
 	init();
 	setjmp(savej);
 	commands();
@@ -529,8 +496,7 @@ void gdelete(void) {
 	fchange = 1;
 }
 
-char *
-getline(unsigned int tl) {
+char *getline(unsigned int tl) {
 	char *bp, *lp;
 	int nl;
 
@@ -573,8 +539,7 @@ int putline(void) {
 	return(nl);
 }
 
-char *
-getblock(unsigned int atl, int iof) {
+char *getblock(unsigned int atl, int iof) {
 	int bno, off;
 
 	bno = (atl/(BLKSIZE/2));
@@ -1000,9 +965,6 @@ void puts(char *sp) {
 		putchr(*sp++);
 	putchr('\n');
 }
-
-char	line[70];
-char	*linp	= line;
 
 void putchr(int ac) {
 	char *lp;

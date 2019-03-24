@@ -1,4 +1,3 @@
-/* make BLKSIZE and LBSIZE 512 for smaller machines */
 #define	BLKSIZE	4096
 #define	NBLK	2047
 
@@ -58,6 +57,8 @@ int	exit(int);
 int	wait(int *);
 int	unlink(char *);
 
+char	line[70];
+char	*linp	= line;
 
 int	vflag	= 1;
 int	oflag;
@@ -88,9 +89,7 @@ int	fchange;
 int	wrapp;
 int	bpagesize = 20;
 unsigned nlall = 128;
-
 char	*mktemp(char *);
-char	tmpXXXXX[50] = "/tmp/eXXXXX";
 char	*malloc(int);
 char	*realloc(char *, int);
 
@@ -151,37 +150,3 @@ SIG_TYP	oldquit;
 /* these two are not in ansi, but we need them */
 #define	SIGHUP	1	/* hangup */
 #define	SIGQUIT	3	/* quit (ASCII FS) */
-
-// FUNCTIONS I NEED TO KEEP! ...For now ;)
-
-/*
-
-add()
-nonzero()
-newline()
-rdelete()
-append()
-setnoaddr()
-filename()
-init()
-puts()
-global()
-join()
-error()
-move()
-print()
-quit()
-setwide()
-squeeze()
-append()
-exfile()
-substitute()
-getchr() ...duh
-putfile()
-lseek() ??
-putd()
-callunix()      yeah that may be going bye bye, though good on ed
-
-
-
-*/
