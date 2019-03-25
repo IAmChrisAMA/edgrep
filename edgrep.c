@@ -10,6 +10,7 @@
 int main(int argc, char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   while (argc == 3) {
+    printf("\nThis code is *sorta* broken. You need 2 arguments through CLI, then you can run ed.\n\n   Usage: edgrep [SEARCH_STRING]... [SEARCH_FILE]...\n\nTHEN you can use ed.\nAlso don't press enter without g/... it seg-faults. -C\n\n");
     FILE *file = fopen(argv[2], "r");
     int f; char* c = argv[1];
     /*
@@ -20,17 +21,49 @@ int main(int argc, char *argv[]) {
        check for '\n', which obviously arguments cannot do. Next I decided to create a
        file based off of stdlib.h. Then the realization kicked in where I couldn't load
        more than one file. I have come to a dead end.
+
+       So I just ran commands() again. It... it runs ed. So that's cool. Right?
     */
-    printf("%c", c);
+    commands();
     fclose(file);
     return 0;
   }
-
   if (argc == 2) { for(;;); } // It's kinda what grep does.
   else { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n"); }
   quit(0);  return 0;
 }
-void commands(void) {}
+void commands(void) {  unsigned int *a1;  int c, temp;  char lastsep;
+  for (;;) {
+    if (pflag) { pflag = 0;  addr1 = addr2 = dot;  print(); }  c = '\n';
+    for (addr1 = 0;;) {
+      lastsep = c;  a1 = address();  c = getchr();
+      if (c != ',' && c != ';') { break; }  if (lastsep==',') { error(Q); }
+      if (a1==0) {  a1 = zero+1;  if (a1 > dol) { a1--; }  }  addr1 = a1;  if (c == ';') { dot = a1; }
+    }
+    if (lastsep != '\n' && a1 == 0) { a1 = dol; }
+    if ((addr2 = a1)==0) { given = 0;  addr2 = dot;  } else { given = 1; }
+    if (addr1==0) { addr1 = addr2; }
+
+    switch(c) {
+    case EOF:  return;
+    //======================================================================== //
+    case '\n':  if (a1 == 0) { a1 = dot + 1;  addr2 = a1;  addr1 = a1; }
+                if (lastsep == ';') { addr1 = a1; }  print();  continue;
+    case 'e':  setnoaddr(); if (vflag && fchange) { fchange = 0;  error(Q); } filename(c);  init();
+               addr2 = zero;  goto caseread;
+    case 'g':  global(1);  continue;
+    case 'p':  case 'P':  newline();  print();  continue;
+    case 'Q':  fchange = 0;  case 'q':  setnoaddr();  newline();  quit(0);
+    caseread:
+        if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }  setwide();  squeeze(0);
+                 ninbuf = 0;  c = zero != dol;
+        append(getfile, addr2);  exfile();  fchange = c; continue;
+    case 'z':  grepline();  continue;
+    default:  // fallthrough
+    caseGrepError:  greperror(c);  continue;
+    }  error(Q);
+  }
+}
 unsigned int* address(void) {  int sign;  unsigned int *a, *b;  int opcnt, nextopand;  int c;
   nextopand = -1;  sign = 1;  opcnt = 0;  a = dot;
   do {
