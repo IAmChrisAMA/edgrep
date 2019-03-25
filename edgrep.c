@@ -11,12 +11,10 @@ int main(int argc, char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   while (argc == 3) {
     FILE *file = fopen(argv[2], "r");
-    int f; char c;
+    int f; char* c;
 
     while ((f = fgetc(file)) != EOF) {
-        c = *argv[1];
-        printf("%s", c);
-        //printf("%c", c);
+        printf("%c", f);
     }
 
     fclose(file);

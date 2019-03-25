@@ -7,7 +7,7 @@
 #include <string.h>
 #include "edgrep.h"
 
-int main(int argc, char *argv[]) {  char *p1, *p2;  SIG_TYP oldintr;  oldquit = signal(SIGQUIT, SIG_IGN);
+int main(int argc, char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   commands();
   quit(0);  return 0;
