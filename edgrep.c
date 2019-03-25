@@ -50,14 +50,13 @@ void commands(void) {  unsigned int *a1;  int c, temp;  char lastsep;
     case '\n':  if (a1 == 0) { a1 = dot + 1;  addr2 = a1;  addr1 = a1; }
                 if (lastsep == ';') { addr1 = a1; }  print();  continue;
     case 'e':  setnoaddr(); if (vflag && fchange) { fchange = 0;  error(Q); } filename(c);  init();
-               addr2 = zero;  goto caseread;
+               addr2 = zero;  if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }
+               setwide();  squeeze(0);
+               ninbuf = 0;  c = zero != dol;
+               append(getfile, addr2);  exfile();  fchange = c; continue;
     case 'g':  global(1);  continue;
     case 'p':  case 'P':  newline();  print();  continue;
     case 'Q':  fchange = 0;  case 'q':  setnoaddr();  newline();  quit(0);
-    caseread:
-        if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }  setwide();  squeeze(0);
-                 ninbuf = 0;  c = zero != dol;
-        append(getfile, addr2);  exfile();  fchange = c; continue;
     case 'z':  grepline();  continue;
     default:  // fallthrough
     caseGrepError:  greperror(c);  continue;
