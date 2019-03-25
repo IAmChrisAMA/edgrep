@@ -13,9 +13,8 @@ int main(int argc, char *argv[]) {
     FILE *file = fopen(argv[2], "r");
     int f; char* c;
 
-    while ((f = fgetc(file)) != EOF) {
-        printf("%c", f);
-    }
+    c = argv[1];
+    printf("%s\n", c);
 
     fclose(file);
     return 0;
