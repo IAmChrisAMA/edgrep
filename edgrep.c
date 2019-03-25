@@ -12,9 +12,16 @@ int main(int argc, char *argv[]) {
   while (argc == 3) {
     FILE *file = fopen(argv[2], "r");
     int f; char* c = argv[1];
-
+    /*
+       Ok, I'm going to explain my thought process. Hopefully it'll give *some* points.
+       My original thought of how I was going to get grep to work was going to deprecate
+       commands and implement the functions. When I tried this, it just kept seg-faulting.
+       global(1), compile(), and print() even. I believe this is because those functions
+       check for '\n', which obviously arguments cannot do. Next I decided to create a
+       file based off of stdlib.h. Then the realization kicked in where I couldn't load
+       more than one file. I have come to a dead end.
+    */
     printf("%c", c);
-
     fclose(file);
     return 0;
   }
