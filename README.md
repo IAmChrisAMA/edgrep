@@ -8,3 +8,4 @@
 **__Example__**: ./edgrep '^[0-9]' '*.txt'
 
 
+346 lines of compressed, pure grep searching with regexp and multiple file support. Nothing gets cleaner than this. ^-^
