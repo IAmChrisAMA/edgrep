@@ -294,7 +294,7 @@ void  onhup(int n) {
 }
 void  onintr(int n) { signal(SIGINT, onintr);  putchr_('\n');  lastc = '\n';  error(Q);  }
 void  print(void) {  unsigned int *a1 = addr1;  nonzero();
-  do {  if (listn) {  count = a1 - zero;  putd();  /*putchr_('\t');  }  puts_(getline_blk(*a1++));  } while (a1 <= addr2);
+  do {  if (listn) {  count = a1 - zero;  putd();  putchr_('\t');  }  puts_(getline_blk(*a1++));  } while (a1 <= addr2);
   dot = addr2;  listf = 0;  listn = 0;  pflag = 0;
 }
 void  putchr_(int ac) {  char *lp = linp;  int c = ac;
