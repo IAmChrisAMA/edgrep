@@ -6,24 +6,6 @@
 #include <fcntl.h>
 #include <string.h>
 
-const int BLKSIZE = 40960;  const int NBLK = 2047;  const int FNSIZE = 128;  const int LBSIZE = 40960;
-const int ESIZE = 256; const int GBSIZE = 256;  const int NBRA = 5;  const int KSIZE = 9;  const int CBRA = 1;
-const int CCHR = 2;  const int CDOT = 4;  const int CCL = 6;  const int NCCL = 8;  const int CDOL = 10;
-const int CEOF = 11;  const int CKET = 12;  const int CBACK = 14;  const int CCIRC = 15;  const int STAR = 01;
-const int READ = 0;  const int WRITE = 1; const int BUFSIZE = 100;  /* const int EOF = -1; */
-
-int  peekc, lastc, given, ninbuf, io, pflag;
-int  vflag  = 1, oflag, listf, listn, col, tfile  = -1, tline, iblock  = -1, oblock  = -1, ichanged, nleft;
-int  names[26], anymarks, nbra, subnewa, subolda, fchange, wrapp, bpagesize = 20;
-unsigned nlall = 128;  unsigned int  *addr1, *addr2, *dot, *dol, *zero;
-
-char inputbuf[GBSIZE];
-long  count;
-
-char  Q[] = "", T[] = "TMP", savedfile[FNSIZE], file[FNSIZE], linebuf[LBSIZE], rhsbuf[LBSIZE/2], expbuf[ESIZE+4];
-char  genbuf[LBSIZE], *nextip, *linebp, *globp, *mktemp(char *), tmpXXXXX[50] = "/tmp/eXXXXX";
-char  *tfname, *loc1, *loc2, ibuff[BLKSIZE], obuff[BLKSIZE], WRERR[]  = "WRITE ERROR", *braslist[NBRA], *braelist[NBRA];
-char  line[70];  char  *linp  = line;
 void commands(void); void add(int i);  unsigned int *address(void);  int advance(char *lp, char *ep);
 int append(int (*f)(void), unsigned int *a);  int backref(int i, char *lp);
 void blkio(int b, char *buf, long (*iofcn)(int, void*, unsigned long));  void callunix(void);
@@ -37,19 +19,14 @@ void onintr(int n);  char *place(char *sp, char *l1, char *l2);  void print(void
 void putd(void);  void putfile(void);  int putline(void);  void puts_(char *sp); void quit(int n);
 void rdelete(unsigned int *ad1, unsigned int *ad2);  void reverse(unsigned int *a1, unsigned int *a2);
 void setwide(void);  void setnoaddr(void);  void squeeze(int);  void substitute(int inglob);
-jmp_buf  savej;
-char grepbuf[GBSIZE];
 void greperror(char);  void grepline(void);
 
-char buf[BUFSIZE];
-int bufp = 0;
-
-void grep_loadfile(const char *c);
+void readfile(const char *c);
 void ungetch_(int c);
 void commands(void);
 void printcommand(void);
 void search(const char* c);
-void global_find(int k, const char* c);
+void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*));
+void search_file(const char* filename, const char* searhfor);
 
 typedef void (*SIG_TYP)(int);
-SIG_TYP oldhup, oldquit;

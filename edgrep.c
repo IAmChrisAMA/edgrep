@@ -5,15 +5,41 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
+#include <glob.h>
+
 #include "edgrep.h"
+
+// ================================================== [DECLARATIONS] =================================================== //
+const int BLKSIZE = 40960;  const int NBLK = 2047;  const int FNSIZE = 128;  const int LBSIZE = 40960;
+const int ESIZE = 256; const int GBSIZE = 256;  const int NBRA = 5;  const int KSIZE = 9;  const int CBRA = 1;
+const int CCHR = 2;  const int CDOT = 4;  const int CCL = 6;  const int NCCL = 8;  const int CDOL = 10;
+const int CEOF = 11;  const int CKET = 12;  const int CBACK = 14;  const int CCIRC = 15;  const int STAR = 01;
+const int READ = 0;  const int WRITE = 1; const int BUFSIZE = 100;  /* const int EOF = -1; */
+
+int  peekc, lastc, given, ninbuf, io, pflag;
+int  vflag  = 1, oflag, listf, listn, col, tfile  = -1, tline, iblock  = -1, oblock  = -1, ichanged, nleft;
+int  names[26], anymarks, nbra, subnewa, subolda, fchange, wrapp, bpagesize = 20;
+unsigned nlall = 128;  unsigned int  *addr1, *addr2, *dot, *dol, *zero;
+
+char inputbuf[GBSIZE];
+long  count;
+jmp_buf  savej;
+
+char  Q[] = "", T[] = "TMP", savedfile[FNSIZE], file[FNSIZE], linebuf[LBSIZE], rhsbuf[LBSIZE/2], expbuf[ESIZE+4];
+char  genbuf[LBSIZE], *nextip, *linebp, *globp, *mktemp(char *), tmpXXXXX[50] = "/tmp/eXXXXX";
+char  *tfname, *loc1, *loc2, ibuff[BLKSIZE], obuff[BLKSIZE], WRERR[]  = "WRITE ERROR", *braslist[NBRA], *braelist[NBRA];
+char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; int bufp = 0;
+SIG_TYP oldhup, oldquit;
+//===================================================================================================================== //
 
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   tfname = mkdtemp(tmpXXXXX);
   init();
-  while (argc == 3) {
-      grep_loadfile(argv[2]);
-      search(argv[1]);
+  while (argc >= 3) {
+    //readfile(argv[2]);
+    //search(argv[1]);
+    process_dir(argv[2], argv[1], search_file);
     return 0;
   }
   if (argc == 2) { for(;;); } // It's kinda what grep does.
@@ -25,16 +51,13 @@ void filename(const char* c) {
   strcpy(file, c);
   strcpy(savedfile, c);
 }
-void grep_loadfile(const char* c) {
-    setnoaddr(); if (vflag && fchange) { fchange = 0;  error(Q); } filename(c);  init();
-    addr2 = zero;  if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }
-    setwide();  squeeze(0);
-    ninbuf = 0;  //c = zero != dol;
-    append(getfile, addr2);  exfile();  fchange = *c;
+void readfile(const char* c) {
+  setnoaddr(); if (vflag && fchange) { fchange = 0;  error(Q); } filename(c);  init();
+  addr2 = zero;  if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }
+  setwide();  squeeze(0); ninbuf = 0; append(getfile, addr2);  exfile();  fchange = *c;
 }
-void search(const char* c) { char buf[GBSIZE]; snprintf(buf, sizeof(buf), "%s\n", c);
-  /*printf("g%s", buf);*/ const char* p = buf + strlen(buf) - 1;
-  while (p >= buf) { ungetch_(*p--); }
+void search(const char* c) { char buf[GBSIZE]; snprintf(buf, sizeof(buf), "/%s\n", c);
+  const char* p = buf + strlen(buf) - 1; while (p >= buf) { ungetch_(*p--); }
   global(1);
 }
 void printcommand(void) { int c; char lastsep;
@@ -54,8 +77,14 @@ void printcommand(void) { int c; char lastsep;
         case EOF: default: return;
       }
     }
-  }
-
+}
+void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*)) {
+  if (strchr(dir, '*') == NULL) { search_file(dir, searchfor); return; }
+  glob_t results; memset(&results, 0, sizeof(results)); glob(dir, 0, NULL, &results);
+  for (int i = 0; i < results.gl_pathc; ++i) { printf("%s\n", results.gl_pathv[i]); }
+  globfree(&results);
+}
+void search_file(const char* filename, const char* searchfor) { readfile(filename); search(searchfor); }
 int  getch_(void) { return (bufp > 0) ? buf[--bufp] : getchar(); }
 void ungetch_(int c) {
   if (bufp >= BUFSIZE)
@@ -177,7 +206,7 @@ void  compile(int eof) {  int c, cclcnt;  char *ep = expbuf, *lastep, bracket[NB
     }
   }  cerror:  expbuf[0] = 0;  nbra = 0;  error(Q);
 }
-void  error(char *s) {  int c;  wrapp = 0;  listf = 0;  listn = 0;  putchr_('?');  puts_(s);
+void  error(char *s) {  int c;  wrapp = 0;  listf = 0;  listn = 0;  /*putchr_('?');*/  puts_(s);
   count = 0;  lseek(0, (long)0, 2);  pflag = 0;  if (globp) { lastc = '\n'; }  globp = 0;  peekc = lastc;
   if(lastc) { while ((c = getchr()) != '\n' && c != EOF) { } }
   if (io > 0) { close(io);  io = -1; }  quit(-1);
