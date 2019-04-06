@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include <string.h>
 #include <glob.h>
-
 #include "edgrep.h"
 
 // ================================================== [DECLARATIONS] =================================================== //
@@ -31,28 +30,20 @@ char  *tfname, *loc1, *loc2, ibuff[BLKSIZE], obuff[BLKSIZE], WRERR[]  = "WRITE E
 char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; int bufp = 0;
 SIG_TYP oldhup, oldquit;
 //===================================================================================================================== //
-
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   tfname = mkdtemp(tmpXXXXX);
   init();
-  while (argc >= 3) {
-    //readfile(argv[2]);
-    //search(argv[1]);
-    process_dir(argv[2], argv[1], search_file);
-    return 0;
-  }
-  if (argc == 2) { for(;;); } // It's kinda what grep does.
-  else { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n"); }
+  if (argc != 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)"); exit(1); }
+  process_dir(argv[2], argv[1], search_file);
   quit(0);  return 0;
 }
-
 void filename(const char* c) {
   strcpy(file, c);
   strcpy(savedfile, c);
 }
 void readfile(const char* c) {
-  setnoaddr(); if (vflag && fchange) { fchange = 0;  error(Q); } filename(c);  init();
+  setnoaddr(); if (vflag && fchange) { fchange = 0; } filename(c);  init();
   addr2 = zero;  if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }
   setwide();  squeeze(0); ninbuf = 0; append(getfile, addr2);  exfile();  fchange = *c;
 }
@@ -75,13 +66,13 @@ void printcommand(void) { int c; char lastsep;
     switch(c) {
         case 'p': case 'P': newline(); print(); break;
         case EOF: default: return;
-      }
     }
+  }
 }
 void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*)) {
   if (strchr(dir, '*') == NULL) { search_file(dir, searchfor); return; }
   glob_t results; memset(&results, 0, sizeof(results)); glob(dir, 0, NULL, &results);
-  for (int i = 0; i < results.gl_pathc; ++i) { printf("%s\n", results.gl_pathv[i]); }
+  for (int i = 0; i < results.gl_pathc; ++i) { printf("\n%s:\n--------------\n", results.gl_pathv[i]); const char* filename = results.gl_pathv[i]; fp(filename, searchfor); }
   globfree(&results);
 }
 void search_file(const char* filename, const char* searchfor) { readfile(filename); search(searchfor); }
@@ -93,9 +84,8 @@ void ungetch_(int c) {
     buf[bufp++] = c;
 }
 
-
 // ================================================================================================================= //
-//                                                  EWW.                                                       //
+//                                             Mostly ed code that is unedited.                                      //
 // ================================================================================================================= //
 unsigned int* address(void) {  int sign;  unsigned int *a, *b;  int opcnt, nextopand;  int c;
   nextopand = -1;  sign = 1;  opcnt = 0;  a = dot;
@@ -224,7 +214,7 @@ int   execute(unsigned int *addr) {  char *p1, *p2 = expbuf;  int c;
   }
   do {  /* regular algorithm */   if (advance(p1, p2)) {  loc1 = p1;  return(1);  }  } while (*p1++);  return(0);
 }
-void  exfile(void) {  close(io);  io = -1;  if (vflag) {  /*putd();*/  putchr_('\n'); }  }    // Removed character
+void  exfile(void) {  close(io);  io = -1;  if (vflag) {  /*putd();*/  /*putchr_('\n');*/ }  }    // Removed character
 char* getblock(unsigned int atl, int iof) {  int off, bno = (atl/(BLKSIZE/2));  off = (atl<<1) & (BLKSIZE-1) & ~03;
   if (bno >= NBLK) {  lastc = '\n';  error(T);  }  nleft = BLKSIZE - off;
   if (bno==iblock) {  ichanged |= iof;  return(ibuff+off);  }  if (bno==oblock)  { return(obuff+off);  }
@@ -304,7 +294,7 @@ void  onhup(int n) {
 }
 void  onintr(int n) { signal(SIGINT, onintr);  putchr_('\n');  lastc = '\n';  error(Q);  }
 void  print(void) {  unsigned int *a1 = addr1;  nonzero();
-  do {  if (listn) {  count = a1 - zero;  putd();  putchr_('\t');  }  puts_(getline_blk(*a1++));  } while (a1 <= addr2);
+  do {  if (listn) {  count = a1 - zero;  putd();  /*putchr_('\t');  }  puts_(getline_blk(*a1++));  } while (a1 <= addr2);
   dot = addr2;  listf = 0;  listn = 0;  pflag = 0;
 }
 void  putchr_(int ac) {  char *lp = linp;  int c = ac;
