@@ -3,8 +3,8 @@
 
 ===============================================================
 
-**__Usage__**          ./edgrep '[search_string]' '[search_file]'
+**__Usage__**: ./edgrep '[search_string]' '[search_file]'
 
-**__Example__**        ./edgrep '^[0-9]' '*.txt'
+**__Example__**: ./edgrep '^[0-9]' '*.txt'
 
 
