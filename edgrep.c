@@ -13,21 +13,14 @@ const int ESIZE = 256; const int GBSIZE = 256;  const int NBRA = 5;  const int K
 const int CCHR = 2;  const int CDOT = 4;  const int CCL = 6;  const int NCCL = 8;  const int CDOL = 10;
 const int CEOF = 11;  const int CKET = 12;  const int CBACK = 14;  const int CCIRC = 15;  const int STAR = 01;
 const int READ = 0;  const int WRITE = 1; const int BUFSIZE = 100;  /* const int EOF = -1; */
-
 int  peekc, lastc, given, ninbuf, io, pflag;
 int  vflag  = 1, oflag, listf, listn, col, tfile  = -1, tline, iblock  = -1, oblock  = -1, ichanged, nleft;
 int  names[26], anymarks, nbra, subnewa, subolda, fchange, wrapp, bpagesize = 20;
-unsigned nlall = 128;  unsigned int  *addr1, *addr2, *dot, *dol, *zero;
-
-char inputbuf[GBSIZE];
-long  count;
-jmp_buf  savej;
-
+unsigned nlall = 128;  unsigned int  *addr1, *addr2, *dot, *dol, *zero; char inputbuf[GBSIZE]; long  count;
 char  Q[] = "", T[] = "TMP", savedfile[FNSIZE], file[FNSIZE], linebuf[LBSIZE], rhsbuf[LBSIZE/2], expbuf[ESIZE+4];
 char  genbuf[LBSIZE], *nextip, *linebp, *globp, *mktemp(char *), tmpXXXXX[50] = "/tmp/eXXXXX";
 char  *tfname, *loc1, *loc2, ibuff[BLKSIZE], obuff[BLKSIZE], WRERR[]  = "WRITE ERROR", *braslist[NBRA], *braelist[NBRA];
 char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; int bufp = 0;
-SIG_TYP oldhup, oldquit;
 //===================================================================================================================== //
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
@@ -82,8 +75,6 @@ void ungetch_(int c) {
   else
     buf[bufp++] = c;
 }
-// ================================================================================================================= //
-//                                           Mostly ed code that is unedited.                                        //
 // ================================================================================================================= //
 unsigned int* address(void) {  int sign;  unsigned int *a, *b;  int opcnt, nextopand;  int c;
   nextopand = -1;  sign = 1;  opcnt = 0;  a = dot;
@@ -336,9 +327,7 @@ int   putline(void) {  char *bp, *lp;  int nl;  unsigned int tl;  fchange = 1;  
 }
 void  puts_(char *sp) {  col = 0;  while (*sp) { putchr_(*sp++); }  putchr_('\n');  }
 void  quit(int n) { if (vflag && fchange && dol!=zero) {  fchange = 0;  error(Q);  }  unlink(tfname); exit(0); }
-void  reverse(unsigned int *a1, unsigned int *a2) {  int t;
-  for (;;) {  t = *--a2;  if (a2 <= a1) { return; }  *a2 = *a1;  *a1++ = t;  }
-}
+void  reverse(unsigned int *a1, unsigned int *a2) {  int t;  for (;;) {  t = *--a2;  if (a2 <= a1) { return; }  *a2 = *a1;  *a1++ = t;  } }
 void  setnoaddr(void) { if (given) { error(Q); } }
 void  setwide(void) { if (!given) { addr1 = zero + (dol>zero);  addr2 = dol; } }
 void  squeeze(int i) { if (addr1 < zero+i || addr2 > dol || addr1 > addr2) { error(Q); } }
