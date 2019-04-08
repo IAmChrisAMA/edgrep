@@ -28,5 +28,3 @@ void printcommand(void);
 void search(const char* c);
 void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*));
 void search_file(const char* filename, const char* searhfor);
-
-typedef void (*SIG_TYP)(int);

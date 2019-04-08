@@ -23,12 +23,9 @@ char  *tfname, *loc1, *loc2, ibuff[BLKSIZE], obuff[BLKSIZE], WRERR[]  = "WRITE E
 char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; int bufp = 0;
 //===================================================================================================================== //
 int main(int argc, const char *argv[]) {
-  zero = (unsigned *)malloc(nlall * sizeof(unsigned));
-  tfname = mkdtemp(tmpXXXXX);
-  init();
+  zero = (unsigned *)malloc(nlall * sizeof(unsigned)); tfname = mkdtemp(tmpXXXXX); init();
   if (argc != 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
-  process_dir(argv[2], argv[1], search_file);
-  quit(0);  return 0;
+  process_dir(argv[2], argv[1], search_file); quit(0);  return 0;
 }
 void filename(const char* c) {
   strcpy(file, c);
