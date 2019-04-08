@@ -7,7 +7,6 @@
 #include <string.h>
 #include <glob.h>
 #include "edgrep.h"
-
 // ================================================== [DECLARATIONS] =================================================== //
 const int BLKSIZE = 40960;  const int NBLK = 2047;  const int FNSIZE = 128;  const int LBSIZE = 40960;
 const int ESIZE = 256; const int GBSIZE = 256;  const int NBRA = 5;  const int KSIZE = 9;  const int CBRA = 1;
@@ -34,7 +33,7 @@ int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   tfname = mkdtemp(tmpXXXXX);
   init();
-  if (argc != 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)"); exit(1); }
+  if (argc != 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
   process_dir(argv[2], argv[1], search_file);
   quit(0);  return 0;
 }
