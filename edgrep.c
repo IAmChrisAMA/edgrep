@@ -82,9 +82,8 @@ void ungetch_(int c) {
   else
     buf[bufp++] = c;
 }
-
 // ================================================================================================================= //
-//                                             Mostly ed code that is unedited.                                      //
+//                                           Mostly ed code that is unedited.                                        //
 // ================================================================================================================= //
 unsigned int* address(void) {  int sign;  unsigned int *a, *b;  int opcnt, nextopand;  int c;
   nextopand = -1;  sign = 1;  opcnt = 0;  a = dot;
