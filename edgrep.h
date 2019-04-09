@@ -5,7 +5,15 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
-
+//==============================================================================================================//
+void readfile(const char *c);
+void ungetch_(int c);
+void commands(void);
+void printcommand(void);
+void search(const char* c);
+void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*));
+void search_file(const char* filename, const char* searhfor);
+//==============================================================================================================//
 void commands(void); void add(int i);  unsigned int *address(void);  int advance(char *lp, char *ep);
 int append(int (*f)(void), unsigned int *a);  int backref(int i, char *lp);
 void blkio(int b, char *buf, long (*iofcn)(int, void*, unsigned long));  void callunix(void);
@@ -20,11 +28,3 @@ void putd(void);  void putfile(void);  int putline(void);  void puts_(char *sp);
 void rdelete(unsigned int *ad1, unsigned int *ad2);  void reverse(unsigned int *a1, unsigned int *a2);
 void setwide(void);  void setnoaddr(void);  void squeeze(int);  void substitute(int inglob);
 void greperror(char);  void grepline(void);
-
-void readfile(const char *c);
-void ungetch_(int c);
-void commands(void);
-void printcommand(void);
-void search(const char* c);
-void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*));
-void search_file(const char* filename, const char* searhfor);

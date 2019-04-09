@@ -1,13 +1,9 @@
 #include <signal.h>
-#include <setjmp.h>
-#include <unistd.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
 #include <string.h>
 #include <glob.h>
 #include "edgrep.h"
-// ================================================== [DECLARATIONS] =================================================== //
+// ================================================== [Declarations] ================================================== //
 const int BLKSIZE = 40960;  const int NBLK = 2047;  const int FNSIZE = 128;  const int LBSIZE = 40960;
 const int ESIZE = 256; const int GBSIZE = 256;  const int NBRA = 5;  const int KSIZE = 9;  const int CBRA = 1;
 const int CCHR = 2;  const int CDOT = 4;  const int CCL = 6;  const int NCCL = 8;  const int CDOL = 10;
@@ -24,7 +20,7 @@ char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; i
 //===================================================================================================================== //
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned)); tfname = mkdtemp(tmpXXXXX); init();
-  //if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
+  if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
   for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); }
   quit(0);
   return(0);
@@ -147,7 +143,6 @@ int   cclass(char *set, int c, int af) {  int n;  if (c == 0) { return(0); }  n 
   while (--n) { if (*set++ == c) { return(af); } }  return(!af);
 }
 void  compile(int eof) {  int c, cclcnt;  char *ep = expbuf, *lastep, bracket[NBRA], *bracketp = bracket;
-  // MAKING CHANGES
   if ((c = getchr()) == '\n') { peekc = c;  c = eof; }
   if (c == eof) {  if (*ep==0) { error(Q); }  return; }
   nbra = 0;  if (c=='^') { c = getchr();  *ep++ = CCIRC; }  peekc = c;  lastep = 0;
@@ -322,7 +317,6 @@ int   putline(void) {  char *bp, *lp;  int nl;  unsigned int tl;  fchange = 1;  
 }
 void  puts_(char *sp) {  col = 0;  while (*sp) { putchr_(*sp++); }  putchr_('\n');  }
 void  quit(int n) { if (vflag && fchange && dol!=zero) {  fchange = 0;  error(Q);  }  unlink(tfname); exit(0); }
-void  reverse(unsigned int *a1, unsigned int *a2) {  int t;  for (;;) {  t = *--a2;  if (a2 <= a1) { return; }  *a2 = *a1;  *a1++ = t;  } }
 void  setnoaddr(void) { if (given) { error(Q); } }
 void  setwide(void) { if (!given) { addr1 = zero + (dol>zero);  addr2 = dol; } }
 void  squeeze(int i) { if (addr1 < zero+i || addr2 > dol || addr1 > addr2) { error(Q); } }
