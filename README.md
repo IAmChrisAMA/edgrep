@@ -1,7 +1,7 @@
 # Converting ed into grep
 ### Chris Nutter | cdnutter@csu.fullerton.edu
 
-362 lines of ~~pure~~, compressed grep searching with regexp and multiple file support. Nothing gets cleaner than this. (not true).
+352 lines of ~~pure~~, compressed grep searching with regexp and multiple file support. Nothing gets cleaner than this. (not true).
 
 
 **__Usage__**: `./edgrep '[search_string]' '[search_file]'`
