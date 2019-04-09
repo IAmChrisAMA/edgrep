@@ -3,10 +3,6 @@
 #include <string.h>
 #include <glob.h>
 #include "edgrep.h"
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
 // ================================================== [Declarations] ================================================== //
 const int BLKSIZE = 40960;  const int NBLK = 2047;  const int FNSIZE = 128;  const int LBSIZE = 40960;
 const int ESIZE = 256; const int GBSIZE = 256;  const int NBRA = 5;  const int KSIZE = 9;  const int CBRA = 1;
@@ -24,7 +20,7 @@ char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; i
 //===================================================================================================================== //
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned)); tfname = mkdtemp(tmpXXXXX); init();
-  if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n"); exit(1); }
+  if (argc < 3) { printf("Usage: edgrep [OPTION]... PATTERNS [FILE]...\n"); exit(1); }
   for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); } quit(0); return(0);
 }
 void filename(const char* c) {
@@ -72,7 +68,7 @@ void puts_nonewline(char *sp) {  col = 0;  while (*sp) { putchr_(*sp++); } }
 void print(void) {  unsigned int *a1 = addr1;  nonzero(); char buf[BUFSIZ];
   while (a1 <= addr2) {
     if (listn) {  count = a1 - zero;  putd();  putchr_('\t');  }
-    snprintf(buf, sizeof(buf), "%s%s%s:%s", KMAG, file, KCYN, KNRM); puts_nonewline(buf); puts_(getline_blk(*a1++));
+    snprintf(buf, sizeof(buf), "\x1B[35m%s\x1B[36m:\x1B[0m", file); puts_nonewline(buf); puts_(getline_blk(*a1++));
   } dot = addr2;  listf = listn = 0;  pflag = 0;
 }
 // ================================================================================================================= //
