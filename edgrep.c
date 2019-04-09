@@ -24,8 +24,9 @@ char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; i
 //===================================================================================================================== //
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned)); tfname = mkdtemp(tmpXXXXX); init();
-  if (argc != 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
-  process_dir(argv[2], argv[1], search_file); quit(0);  return 0;
+  if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
+  for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); quit(0); return 0; }
+  //process_dir(argv[2], argv[1], search_file); quit(0);  return 0;
 }
 void filename(const char* c) {
   strcpy(file, c);
@@ -51,11 +52,7 @@ void printcommand(void) { int c; char lastsep;
     if (lastsep != '\n' && a1 == 0) { a1 = dol; }
     if ((addr2 = a1)==0) { given = 0;  addr2 = dot;  } else { given = 1; }
     if (addr1==0) { addr1 = addr2; }
-
-    switch(c) {
-        case 'p': case 'P': newline(); print(); break;
-        case EOF: default: return;
-    }
+    switch(c) { case 'p': case 'P': newline(); print(); break;  case EOF: default: return; }
   }
 }
 void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*)) {
