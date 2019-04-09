@@ -24,9 +24,10 @@ char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; i
 //===================================================================================================================== //
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned)); tfname = mkdtemp(tmpXXXXX); init();
-  if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
-  for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); quit(0); return 0; }
-  //process_dir(argv[2], argv[1], search_file); quit(0);  return 0;
+  //if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
+  for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); }
+  quit(0);
+  return(0);
 }
 void filename(const char* c) {
   strcpy(file, c);
