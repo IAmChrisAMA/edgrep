@@ -3,6 +3,10 @@
 #include <string.h>
 #include <glob.h>
 #include "edgrep.h"
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
 // ================================================== [Declarations] ================================================== //
 const int BLKSIZE = 40960;  const int NBLK = 2047;  const int FNSIZE = 128;  const int LBSIZE = 40960;
 const int ESIZE = 256; const int GBSIZE = 256;  const int NBRA = 5;  const int KSIZE = 9;  const int CBRA = 1;
@@ -20,10 +24,8 @@ char  line[70];  char  *linp  = line; char grepbuf[GBSIZE]; char buf[BUFSIZE]; i
 //===================================================================================================================== //
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned)); tfname = mkdtemp(tmpXXXXX); init();
-  if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n\n(Put \'\' around arguments for regexp and/or multiple files to properly work.)\n"); exit(1); }
-  for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); }
-  quit(0);
-  return(0);
+  if (argc < 3) { printf("Usage: grep [OPTION]... PATTERNS [FILE]...\nTry \'grep --help\' for more information.\n"); exit(1); }
+  for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); } quit(0); return(0);
 }
 void filename(const char* c) {
   strcpy(file, c);
@@ -55,7 +57,7 @@ void printcommand(void) { int c; char lastsep;
 void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*)) {
   if (strchr(dir, '*') == NULL) { search_file(dir, searchfor); return; }
   glob_t results; memset(&results, 0, sizeof(results)); glob(dir, 0, NULL, &results);
-  for (int i = 0; i < results.gl_pathc; ++i) { printf("\n%s:\n--------------\n", results.gl_pathv[i]); const char* filename = results.gl_pathv[i]; fp(filename, searchfor); }
+  for (int i = 0; i < results.gl_pathc; ++i) { const char* filename = results.gl_pathv[i]; fp(filename, searchfor); }
   globfree(&results);
 }
 void search_file(const char* filename, const char* searchfor) { readfile(filename); search(searchfor); }
@@ -65,6 +67,13 @@ void ungetch_(int c) {
     printf("ungetch: too many chars\n");
   else
     buf[bufp++] = c;
+}
+void puts_nonewline(char *sp) {  col = 0;  while (*sp) { putchr_(*sp++); } }
+void print(void) {  unsigned int *a1 = addr1;  nonzero(); char buf[BUFSIZ];
+  while (a1 <= addr2) {
+    if (listn) {  count = a1 - zero;  putd();  putchr_('\t');  }
+    snprintf(buf, sizeof(buf), "%s%s%s:%s", KMAG, file, KCYN, KNRM); puts_nonewline(buf); puts_(getline_blk(*a1++));
+  } dot = addr2;  listf = listn = 0;  pflag = 0;
 }
 // ================================================================================================================= //
 unsigned int* address(void) {  int sign;  unsigned int *a, *b;  int opcnt, nextopand;  int c;
@@ -193,7 +202,7 @@ int   execute(unsigned int *addr) {  char *p1, *p2 = expbuf;  int c;
   }
   do {  /* regular algorithm */   if (advance(p1, p2)) {  loc1 = p1;  return(1);  }  } while (*p1++);  return(0);
 }
-void  exfile(void) {  close(io);  io = -1;  if (vflag) {  /*putd();*/  /*putchr_('\n');*/ }  }    // Removed character
+void  exfile(void) {  close(io);  io = -1; }    // Removed character
 char* getblock(unsigned int atl, int iof) {  int off, bno = (atl/(BLKSIZE/2));  off = (atl<<1) & (BLKSIZE-1) & ~03;
   if (bno >= NBLK) {  lastc = '\n';  error(T);  }  nleft = BLKSIZE - off;
   if (bno==iblock) {  ichanged |= iof;  return(ibuff+off);  }  if (bno==oblock)  { return(obuff+off);  }
@@ -272,10 +281,6 @@ void  onhup(int n) {
   fchange = 0;  quit(0);
 }
 void  onintr(int n) { signal(SIGINT, onintr);  putchr_('\n');  lastc = '\n';  error(Q);  }
-void  print(void) {  unsigned int *a1 = addr1;  nonzero();
-  do {  if (listn) {  count = a1 - zero;  putd();  putchr_('\t');  }  puts_(getline_blk(*a1++));  } while (a1 <= addr2);
-  dot = addr2;  listf = 0;  listn = 0;  pflag = 0;
-}
 void  putchr_(int ac) {  char *lp = linp;  int c = ac;
   if (listf) {
     if (c == '\n') {
@@ -316,7 +321,7 @@ int   putline(void) {  char *bp, *lp;  int nl;  unsigned int tl;  fchange = 1;  
   nl = tline;  tline += (((lp - linebuf) + 03) >> 1) & 077776;  return(nl);
 }
 void  puts_(char *sp) {  col = 0;  while (*sp) { putchr_(*sp++); }  putchr_('\n');  }
-void  quit(int n) { if (vflag && fchange && dol!=zero) {  fchange = 0;  error(Q);  }  unlink(tfname); exit(0); }
+void  quit(int n) { if (vflag && fchange && dol!=zero) {  fchange = 0; }  unlink(tfname); exit(0); }
 void  setnoaddr(void) { if (given) { error(Q); } }
 void  setwide(void) { if (!given) { addr1 = zero + (dol>zero);  addr2 = dol; } }
 void  squeeze(int i) { if (addr1 < zero+i || addr2 > dol || addr1 > addr2) { error(Q); } }
