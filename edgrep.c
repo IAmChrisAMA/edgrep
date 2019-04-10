@@ -28,7 +28,7 @@ void filename(const char* c) {
   strcpy(savedfile, c);
 }
 void readfile(const char* c) {
-  /*setnoaddr();*/ if (vflag && fchange) { fchange = 0; } filename(c);  init();
+  if (given) { error(Q); } if (vflag && fchange) { fchange = 0; } filename(c);  init();
   addr2 = zero;  if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }
   setwide();  squeeze(0); ninbuf = 0; append(getfile, addr2);  exfile();  fchange = *c;
 }
