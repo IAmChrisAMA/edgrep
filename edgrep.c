@@ -1,7 +1,3 @@
-#include <signal.h>
-#include <stdio.h>
-#include <string.h>
-#include <glob.h>
 #include "edgrep.h"
 // ================================================== [Declarations] ================================================== //
 const int BLKSIZE = 40960, NBLK = 2047, FNSIZE = 128, LBSIZE = 40960, ESIZE = 256, GBSIZE = 256, NBRA = 5;
@@ -354,7 +350,7 @@ void  global(int k) {
   unsigned int *a1;
   char globuf[GBSIZE];
   if (!given) { addr1 = zero + (dol>zero);  addr2 = dol; }
-  if ((c = getchr()) == '\n') { error(Q); }
+  if ((c = getchr()) == '\n') { }
   compile(c);
   gp = globuf;
   while ((c = getchr()) != '\n' && (c = getchr()) != EOF) {
