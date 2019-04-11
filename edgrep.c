@@ -1,17 +1,15 @@
 #include "edgrep.h"
-// ================================================== [Declarations] ================================================== //
 const int BLKSIZE = 40960, NBLK = 2047, FNSIZE = 128, LBSIZE = 40960, ESIZE = 256, GBSIZE = 256, NBRA = 5;
 const int KSIZE = 9, CBRA = 1, CCHR = 2, ADOT = 4, CCL = 6, NCCL = 8, CDOL = 10, CEOF = 11, CKET = 12, CBACK = 14;
-const int CCIRC = 15, STAR = 01, READ = 0, WRITE = 1, BUFSIZE = 100, CDOT = 4; /* const int EOF = -1; */
+const int CCIRC = 15, STAR = 01, READ = 0, WRITE = 1, BUFSIZE = 100, CDOT = 4;
 int  peekc, lastc, given, ninbuf, io, pflag, vflag = 1, oflag, listf, listn, col, tfile = -1, tline, iblock  = -1;
 int  oblock  = -1, ichanged, nleft, names[26], anymarks, nbra, subnewa, subolda, fchange, wrapp, bpagesize = 20, bufp = 0;
 unsigned nlall = 128;
-unsigned int  *addr1, *addr2, *dot, *dol, *zero;
+unsigned int *addr1, *addr2, *dot, *dol, *zero;
 long count;
 char Q[] = "", inputbuf[GBSIZE], T[] = "TMP", savedfile[FNSIZE], file[FNSIZE], linebuf[LBSIZE], rhsbuf[LBSIZE/2], expbuf[ESIZE+4], genbuf[LBSIZE];
 char *nextip, *linebp, *globp, *mktemp(char *), tmpXXXXX[50] = "/tmp/eXXXXX", *tfname, *loc1, *loc2, ibuff[BLKSIZE], obuff[BLKSIZE];
 char WRERR[]  = "WRITE ERROR", *braslist[NBRA], *braelist[NBRA], line[70],  *linp = line, grepbuf[GBSIZE], buf[BUFSIZE];
-//===================================================================================================================== //
 int   main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   tfname = mkdtemp(tmpXXXXX);
@@ -101,7 +99,6 @@ void  print(void) {
     puts_(getline_blk(*a1++));
   }
 }
-// ================================================================================================================= //
 int   advance(char *lp, char *ep) {
   char *curlp;
   int i;

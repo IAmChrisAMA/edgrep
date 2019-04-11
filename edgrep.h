@@ -4,7 +4,6 @@
 #include <glob.h>
 #include <unistd.h>
 #include <fcntl.h>
-//================================================== [Functions] ===============================================//
 void readfile(const char *c);
 void ungetch_(int c);
 void printcommand(void);
@@ -12,7 +11,6 @@ void search(const char* c);
 void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*));
 void search_file(const char* filename, const char* searhfor);
 void print(void);
-//==============================================================================================================//
 int  advance(char *lp, char *ep);
 int  append(int (*f)(void), unsigned int *a);
 void blkio(int b, char *buf, long (*iofcn)(int, void*, unsigned long));
