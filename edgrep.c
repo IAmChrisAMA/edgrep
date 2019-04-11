@@ -16,7 +16,7 @@ char Q[] = "", inputbuf[GBSIZE], T[] = "TMP", savedfile[FNSIZE], file[FNSIZE], l
 char *nextip, *linebp, *globp, *mktemp(char *), tmpXXXXX[50] = "/tmp/eXXXXX", *tfname, *loc1, *loc2, ibuff[BLKSIZE], obuff[BLKSIZE];
 char WRERR[]  = "WRITE ERROR", *braslist[NBRA], *braelist[NBRA], line[70],  *linp = line, grepbuf[GBSIZE], buf[BUFSIZE];
 //===================================================================================================================== //
-int main(int argc, const char *argv[]) {
+int   main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   tfname = mkdtemp(tmpXXXXX);
   if (argc < 3) {
@@ -27,26 +27,26 @@ int main(int argc, const char *argv[]) {
   exit(0);
   return(0);
 }
-void readfile(const char* c) {
+void  readfile(const char* c) {
   strcpy(file, c);
   strcpy(savedfile, c);
   memset(inputbuf, 0, sizeof(inputbuf));
   tfile = open(tfname, 2);  dot = dol = zero;
   addr2 = zero;
-  if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }
+  if ((io = open((const char*)file, 0)) < 0) { lastc = '\n'; }
   append(getfile, addr2);
   close(io);
   io = -1;
   fchange = *c;
 }
-void search(const char* c) {
+void  search(const char* c) {
   char buf[GBSIZE];
   snprintf(buf, sizeof(buf), "/%s\n", c);
   const char* p = buf + strlen(buf) - 1;
   while (p >= buf) { ungetch_(*p--); }
   global(1);
 }
-void printcommand(void) { int c; char lastsep;
+void  printcommand(void) { int c; char lastsep;
   for (;;) {
     unsigned int* a1;
     if (pflag) {
@@ -77,7 +77,7 @@ void printcommand(void) { int c; char lastsep;
     }
   }
 }
-void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*)) {
+void  process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, const char*)) {
   if (strchr(dir, '*') == NULL) { search_file(dir, searchfor); return; }
   glob_t results;
   memset(&results, 0, sizeof(results));
@@ -88,19 +88,18 @@ void process_dir(const char* dir, const char* searchfor, void(*fp)(const char*, 
   }
   globfree(&results);
 }
-void search_file(const char* filename, const char* searchfor) { readfile(filename); search(searchfor); }
-int  getch_(void) { return (bufp > 0) ? buf[--bufp] : getchar(); }
-void ungetch_(int c) {
+void  search_file(const char* filename, const char* searchfor) { readfile(filename); search(searchfor); }
+int   getch_(void) { return (bufp > 0) ? buf[--bufp] : getchar(); }
+void  ungetch_(int c) {
   if (bufp >= BUFSIZE) { printf("ungetch: too many chars\n"); }
   else { buf[bufp++] = c; }
 }
-void puts_nonewline(char *sp) {
+void  puts_nonewline(char *sp) {
   while (*sp) { putchr_(*sp++); }
 }
-void print(void) {
+void  print(void) {
   unsigned int *a1 = addr1;
   char buf[BUFSIZ];
-  if (addr1 < zero+1 || addr2 > dol || addr1 > addr2) { error(Q); }
   while (a1 <= addr2) {
     snprintf(buf, sizeof(buf), "\x1B[35m%s\x1B[36m:\x1B[0m", file); puts_nonewline(buf);
     puts_(getline_blk(*a1++));
@@ -170,11 +169,7 @@ void  compile(int eof) {
   int c, cclcnt;
   char *ep = expbuf, *lastep, bracket[NBRA], *bracketp = bracket;
   if ((c = getchr()) == '\n') { peekc = c;  c = eof; }
-  if (c == eof)  {
-    if (*ep==0)
-      error(Q);
-    return;
-  }
+  if (c == eof)  { return;}
   nbra = 0;
   if (c=='^') {
     c = getchr();
@@ -430,27 +425,6 @@ void  putchr_(int ac) {
     return;
   }
   linp = lp;
-}
-void  putfile(void) {
-  unsigned int *a1;
-  char *fp, *lp;
-  int n, nib = BLKSIZE;
-  do {
-    lp = getline_blk(*a1++);
-    for (;;) {
-      if (--nib < 0) {
-        n = (int)(fp-genbuf);
-        nib = BLKSIZE-1;
-        fp = genbuf;
-      }
-      count++;
-      if ((*fp++ = *lp++) == 0) {
-        fp[-1] = '\n';
-        break;
-      }
-    }
-  } while (a1 <= addr2);
-  n = (int)(fp-genbuf);
 }
 int   putline(void) {
   char *bp, *lp;
