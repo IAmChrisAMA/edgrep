@@ -19,24 +19,36 @@ char WRERR[]  = "WRITE ERROR", *braslist[NBRA], *braelist[NBRA], line[70],  *lin
 int main(int argc, const char *argv[]) {
   zero = (unsigned *)malloc(nlall * sizeof(unsigned));
   tfname = mkdtemp(tmpXXXXX);
+  //init();
   if (argc < 3) {
     printf("Usage: edgrep [OPTION]... PATTERNS [FILE]...\n");
     exit(1);
   }
   for (int i = 2; i < argc; ++i) { process_dir(argv[i], argv[1], search_file); }
-  exit(0);
+  quit(0);
   return(0);
 }
+// void filename(const char* c) {
+//
+// }
 void readfile(const char* c) {
+  //setnoaddr();
+  //if (vflag && fchange) { fchange = 0; }
+  //filename(c);
   strcpy(file, c);
   strcpy(savedfile, c);
+  //init();
   memset(inputbuf, 0, sizeof(inputbuf));
   tfile = open(tfname, 2);  dot = dol = zero;
   addr2 = zero;
   if ((io = open((const char*)file, 0)) < 0) { lastc = '\n';  error(file); }
+  //setwide();
+  //squeeze(0);
+  //ninbuf = 0;
   append(getfile, addr2);
   close(io);
   io = -1;
+  //exfile();
   fchange = *c;
 }
 void search(const char* c) {
@@ -60,6 +72,7 @@ void printcommand(void) { int c; char lastsep;
       a1 = 0;
       c = getchr();
       if (c != ',' && c != ';') { break; }
+      //if (lastsep==',') { error(Q); }
       if (a1==0) {
         a1 = zero+1;
         if (a1 > dol) { a1--; }
@@ -95,18 +108,56 @@ void ungetch_(int c) {
   else { buf[bufp++] = c; }
 }
 void puts_nonewline(char *sp) {
+  //col = 0;
   while (*sp) { putchr_(*sp++); }
 }
 void print(void) {
   unsigned int *a1 = addr1;
   char buf[BUFSIZ];
+  //squeeze(1);
   if (addr1 < zero+1 || addr2 > dol || addr1 > addr2) { error(Q); }
   while (a1 <= addr2) {
+    // if (listn) {
+    //   count = a1 - zero;
+    //   putd();
+    //   putchr_('\t');
+    // }
     snprintf(buf, sizeof(buf), "\x1B[35m%s\x1B[36m:\x1B[0m", file); puts_nonewline(buf);
     puts_(getline_blk(*a1++));
   }
+  //dot = addr2;
+  //listf = listn = 0;
+  //pflag = 0;
 }
 // ================================================================================================================= //
+// unsigned int* address(void) {  int sign;  unsigned int *a, *b;  int opcnt, nextopand;  int c;
+//   nextopand = -1;  sign = 1;  opcnt = 0;  a = dot;
+//   do {
+//     do c = getchr(); while (c==' ' || c=='\t');
+//     if ('0'<=c && c<='9') {  peekc = c;  if (!opcnt)  { a = zero; }  a += sign*getnum();
+//     } else switch (c) {
+//       case '$':  a = dol;  /* fall through */
+//       case '.':  if (opcnt) { error(Q); } break;
+//       case '\'':
+//         c = getchr();  if (opcnt || c<'a' || 'z'<c) { error(Q); }  a = zero;
+//         do { a++; } while (a<=dol && names[c-'a']!=(*a&~01));  break;
+//       case '?':  sign = -sign;  /* fall through */
+//       case '/':
+//         compile(c);  b = a;
+//         for (;;) {
+//           a += sign;
+//           if (a<=zero) { a = dol; }  if (a>dol) { a = zero; }  if (execute(a)) { break; }  if (a==b)  { error(Q); }
+//         }
+//         break;
+//       default:
+//         if (nextopand == opcnt) {  a += sign;  if (a < zero || dol < a)  { continue; } /* error(Q); */ }
+//         if (c!='+' && c!='-' && c!='^') {  peekc = c;  if (opcnt==0) { a = 0; }  return (a);  }
+//         sign = 1;  if (c!='+') { sign = -sign; }  nextopand = ++opcnt;  continue;
+//     }
+//     sign = 1;  opcnt++;
+//   } while (zero<=a && a<=dol);
+//   error(Q);  /*NOTREACHED*/  return 0;
+// }
 int   advance(char *lp, char *ep) {  char *curlp;  int i;
   for (;;) {
     switch (*ep++) {
@@ -119,8 +170,12 @@ int   advance(char *lp, char *ep) {  char *curlp;  int i;
       case CBRA:  braslist[*ep++] = lp;  continue;
       case CKET:  braelist[*ep++] = lp;  continue;
       case CBACK:
+        //if (braelist[i = *ep++] == 0) { error(Q); }
+        //if (backref(i, lp)) { lp += braelist[i] - braslist[i];  continue; }  return(0);
       case CBACK|STAR:
+        //if (braelist[i = *ep++] == 0) { error(Q); }
         curlp = lp;
+        //while (backref(i, lp)) { lp += braelist[i] - braslist[i]; }
         while (lp >= curlp) {
           if (advance(lp, ep)) { return(1); }
           lp -= braelist[i] - braslist[i];
@@ -129,6 +184,7 @@ int   advance(char *lp, char *ep) {  char *curlp;  int i;
       case CCHR|STAR:  curlp = lp; ++ep;
       case CCL|STAR:
       case NCCL|STAR:  curlp = lp; ep += *ep;
+      //star:  do {  lp--;  if (advance(lp, ep)) { return(1); } } while (lp > curlp);  return(0);
       default: return 1;
     }
   }
@@ -141,6 +197,7 @@ int   append(int (*f)(void), unsigned int *a) {
     if ((dol-zero)+1 >= nlall) {
       unsigned *ozero = zero;
       nlall += 1024;
+      //if ((zero = (unsigned *)realloc((char *)zero, nlall*sizeof(unsigned)))==NULL) {  /*error("MEM?");  onhup(0);*/  }
       dot += zero - ozero;
       dol += zero - ozero;
     }
@@ -154,11 +211,20 @@ int   append(int (*f)(void), unsigned int *a) {
   }
   return(nline);
 }
+// int   backref(int i, char *lp) {
+//   char *bp;
+//   bp = braslist[i];
+//   while (*bp++ == *lp++) {
+//     if (bp >= braelist[i]) { return(1); } }
+//     return(0);
+// }
 void  blkio(int b, char *buf, long (*iofcn)(int, void*, unsigned long)) {
   lseek(tfile, (long)b*BLKSIZE, 0);
+  //if ((*iofcn)(tfile, buf, BLKSIZE) != BLKSIZE) {  error(T);  }
 }
 int   cclass(char *set, int c, int af) {
   int n;
+  //if (c == 0) { return(0); }
   n = *set++;
   while (--n)
     if (*set++ == c) { return(af); }
@@ -168,9 +234,11 @@ void  compile(int eof) {
   int c, cclcnt;
   char *ep = expbuf, *lastep, bracket[NBRA], *bracketp = bracket;
   if ((c = getchr()) == '\n') { peekc = c;  c = eof; }
+  //if (c == eof) {  /*if (*ep==0) { error(Q); }  return;*/ }
   nbra = 0;
   if (c=='^') {
     c = getchr();
+    //*ep++ = CCIRC;
   }
   peekc = c;
   lastep = 0;
@@ -233,14 +301,37 @@ void  compile(int eof) {
     }
   }
 }
+// void  error(char *s) {  int c;  wrapp = 0;  listf = 0;  listn = 0;  /*putchr_('?');*/  puts_(s);
+//   count = 0;  lseek(0, (long)0, 2);  pflag = 0;  if (globp) { lastc = '\n'; }  globp = 0;  peekc = lastc;
+//   if(lastc) { while ((c = getchr()) != '\n' && c != EOF) { } }
+//   if (io > 0) { close(io);  io = -1; }  quit(-1);
+// }
 int   execute(unsigned int *addr) {
   char *p1, *p2 = expbuf;
   int c;
+  for (c = 0; c < NBRA; c++) {
+    braslist[c] = 0;
+    braelist[c] = 0;
+  }
   if (addr == (unsigned *)0) {
     if (*p2 == CCIRC) { return(0); }
     p1 = loc2;
   } else if (addr == zero) { return(0); }
     else { p1 = getline_blk(*addr); }
+  if (*p2 == CCIRC) {
+    loc1 = p1;
+    return(advance(p1, p2+1));
+  }
+  if (*p2 == CCHR) {
+    c = p2[1];
+    do {  if (*p1 != c) { continue; }
+    if (advance(p1, p2)) {
+      loc1 = p1;
+      return(1);
+    }
+    } while (*p1++);
+    return(0);
+  }
   do {
     if (advance(p1, p2)) {
       loc1 = p1;
@@ -249,10 +340,12 @@ int   execute(unsigned int *addr) {
   } while (*p1++);
   return(0);
 }
+//void  exfile(void) {  close(io);  io = -1; }    // Removed character
 char* getblock(unsigned int atl, int iof) {
   int off = (atl<<1) & (BLKSIZE-1) & ~03, bno = (atl/(BLKSIZE/2));
   if (bno >= NBLK) {
     lastc = '\n';
+    //error(T);
   }
   nleft = BLKSIZE - off;
   if (bno==iblock) {
@@ -293,6 +386,7 @@ int   getfile(void) {
     if (--ninbuf < 0) {
       if ((ninbuf = (int)read(io, genbuf, LBSIZE)-1) < 0) {
         if (lp>linebuf) {
+          //puts_("'\\n' appended");
           *genbuf = '\n';
         } else { return(EOF); }
       }
@@ -304,7 +398,7 @@ int   getfile(void) {
     }
     c = *fp++;
     if (c=='\0') { continue; }
-    if (c&0200 || lp >= &linebuf[LBSIZE]) { lastc = '\n'; }
+    if (c&0200 || lp >= &linebuf[LBSIZE]) { lastc = '\n';  /*error(Q);*/  }
     *lp++ = c;
     count++;
   } while (c != '\n');
@@ -327,17 +421,32 @@ char* getline_blk(unsigned int tl) {
   }
   return(linebuf);
 }
+// int   getnum(void) {
+//   int r = 0, c;
+//   while ((c = getchr())>='0' && c <= '9') { r = r * 10 + c - '0'; }
+//   peekc = c;
+//   return (r);
+// }
 void  global(int k) {
   char *gp;
   int c;
   unsigned int *a1;
   char globuf[GBSIZE];
+  //if (globp) { error(Q); }
   if (!given) { addr1 = zero + (dol>zero);  addr2 = dol; }
+  //setwide();
+  //squeeze(dol > zero);
   if ((c = getchr()) == '\n') { error(Q); }
   compile(c);
   gp = globuf;
   while ((c = getchr()) != '\n' && (c = getchr()) != EOF) {
+    //if (c == EOF) { error(Q); }
+    if (c == '\\') {
+      c = getchr();
+      if (c != '\n') { *gp++ = '\\'; }
+    }
     *gp++ = c;
+    //if (gp >= &globuf[GBSIZE-2]) { error(Q); }
   }
   if (gp == globuf) { *gp++ = 'p'; }
   *gp++ = '\n';
@@ -346,6 +455,8 @@ void  global(int k) {
     *a1 &= ~01;
     if (a1>=addr1 && a1<=addr2 && execute(a1)==k) { *a1 |= 01; }
   }
+// file grep doesn't delete
+//  if (globuf[0] == 'd' && globuf[1] == '\n' && globuf[2] == '\0') {  gdelete();  return; }  // special: g/.../d avoid n^2
   for (a1 = zero; a1 <= dol; a1++) {
     if (*a1 & 01) {
       *a1 &= ~01;
@@ -356,6 +467,11 @@ void  global(int k) {
     }
   }
 }
+// void  init(void) {  int *markp;  close(tfile);  tline = 2;
+//   for (markp = names; markp < &names[26]; )  {  *markp++ = 0;  }
+//   subnewa = 0;  anymarks = 0;  iblock = -1;  oblock = -1;  ichanged = 0;
+//   close(creat(tfname, 0600));  tfile = open(tfname, 2);  dot = dol = zero;  memset(inputbuf, 0, sizeof(inputbuf));
+// }
 void  newline(void) {
   int c;
   if ((c = getchr()) == '\n' || c == EOF) { return; }
@@ -364,8 +480,16 @@ void  newline(void) {
     if (c == 'l') { listf++; }
     else if (c == 'n') { listn++; }
     if ((c = getchr()) == '\n') { return; }
-  }
+  }  //error(Q);
 }
+// void  nonzero(void) { squeeze(1); }
+// void  onhup(int n) {
+//   signal(SIGINT, SIG_IGN);
+//   signal(SIGHUP, SIG_IGN);
+//   if (dol > zero) {  addr1 = zero+1;  addr2 = dol;  io = creat("ed.hup", 0600);  if (io > 0) { putfile(); } }
+//   fchange = 0;  quit(0);
+// }
+// void  onintr(int n) { signal(SIGINT, onintr);  putchr_('\n');  lastc = '\n';  error(Q);  }
 void  putchr_(int ac) {
   char *lp = linp;
   int c = ac;
@@ -405,15 +529,24 @@ void  putchr_(int ac) {
   }
   linp = lp;
 }
+void  putd(void) {
+  int r = count % 10;
+  count /= 10;
+  if (count) { putd(); }
+  putchr_(r + '0');
+}
 void  putfile(void) {
   unsigned int *a1;
   char *fp, *lp;
   int n, nib = BLKSIZE;
+  fp = genbuf;
+  a1 = addr1;
   do {
     lp = getline_blk(*a1++);
     for (;;) {
       if (--nib < 0) {
         n = (int)(fp-genbuf);
+        //if (write(io, genbuf, n) != n) {  puts_(WRERR);  error(Q);  }
         nib = BLKSIZE-1;
         fp = genbuf;
       }
@@ -425,10 +558,16 @@ void  putfile(void) {
     }
   } while (a1 <= addr2);
   n = (int)(fp-genbuf);
+  // if (write(io, genbuf, n) != n) {
+  //   puts_(WRERR);
+  //   error(Q);
+  // }
 }
 int   putline(void) {
   char *bp, *lp;
-  int nl, tl;
+  int nl;
+  unsigned int tl;
+  fchange = 1;
   lp = linebuf;
   tl = tline;
   bp = getblock(tl, WRITE);
@@ -446,11 +585,18 @@ int   putline(void) {
     }
   }
   nl = tline;
-  tline += (((lp - linebuf) + 03) >> 1) & 077776;
-  return(nl);
+  tline += (((lp - linebuf) + 03) >> 1) & 077776;  return(nl);
 }
 void  puts_(char *sp) {
   col = 0;
   while (*sp) { putchr_(*sp++); }
   putchr_('\n');
 }
+void  quit(int n) {
+  // if (vflag && fchange && dol!=zero) { fchange = 0; }
+  // unlink(tfname);
+  exit(0);
+}
+//void  setnoaddr(void) { if (given) { error(Q); } }
+//void  setwide(void) { if (!given) { addr1 = zero + (dol>zero);  addr2 = dol; } }
+//void  squeeze(int i) { if (addr1 < zero+i || addr2 > dol || addr1 > addr2) { error(Q); } }

@@ -405,6 +405,12 @@ void  putchr_(int ac) {
   }
   linp = lp;
 }
+void  putd(void) {
+  int r = count % 10;
+  count /= 10;
+  if (count) { putd(); }
+  putchr_(r + '0');
+}
 void  putfile(void) {
   unsigned int *a1;
   char *fp, *lp;
