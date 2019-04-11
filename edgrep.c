@@ -107,7 +107,9 @@ void print(void) {
   }
 }
 // ================================================================================================================= //
-int   advance(char *lp, char *ep) {  char *curlp;  int i;
+int   advance(char *lp, char *ep) {
+  char *curlp;
+  int i;
   for (;;) {
     switch (*ep++) {
       case CCHR:  if (*ep++ == *lp++) { continue; } return(0);
@@ -168,9 +170,15 @@ void  compile(int eof) {
   int c, cclcnt;
   char *ep = expbuf, *lastep, bracket[NBRA], *bracketp = bracket;
   if ((c = getchr()) == '\n') { peekc = c;  c = eof; }
+  if (c == eof)  {
+    if (*ep==0)
+      error(Q);
+    return;
+  }
   nbra = 0;
   if (c=='^') {
     c = getchr();
+    *ep++ = CCIRC;
   }
   peekc = c;
   lastep = 0;
@@ -236,11 +244,29 @@ void  compile(int eof) {
 int   execute(unsigned int *addr) {
   char *p1, *p2 = expbuf;
   int c;
+  for (c = 0; c < NBRA; c++) {
+    braslist[c] = 0;
+    braelist[c] = 0;
+  }
   if (addr == (unsigned *)0) {
     if (*p2 == CCIRC) { return(0); }
     p1 = loc2;
   } else if (addr == zero) { return(0); }
     else { p1 = getline_blk(*addr); }
+  if (*p2 == CCIRC) {
+    loc1 = p1;
+    return(advance(p1, p2+1));
+  }
+  if (*p2 == CCHR) {
+    c = p2[1];
+    do {  if (*p1 != c) { continue; }
+    if (advance(p1, p2)) {
+      loc1 = p1;
+      return(1);
+    }
+    } while (*p1++);
+    return(0);
+  }
   do {
     if (advance(p1, p2)) {
       loc1 = p1;
